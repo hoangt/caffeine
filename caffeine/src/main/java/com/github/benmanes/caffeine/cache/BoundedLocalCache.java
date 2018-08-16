@@ -50,6 +50,7 @@ import java.util.Spliterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -3422,6 +3423,7 @@ abstract class BoundedLocalCache<K, V> extends BLCHeader.DrainStatusRef<K, V>
     final BoundedLocalCache<K, CompletableFuture<V>> cache;
     final boolean isWeighted;
 
+    @Nullable ConcurrentMap<K, CompletableFuture<V>> mapView;
     @Nullable CacheView<K, V> cacheView;
     @Nullable Policy<K, V> policy;
 
@@ -3435,6 +3437,11 @@ abstract class BoundedLocalCache<K, V> extends BLCHeader.DrainStatusRef<K, V>
     @Override
     public BoundedLocalCache<K, CompletableFuture<V>> cache() {
       return cache;
+    }
+
+    @Override
+    public ConcurrentMap<K, CompletableFuture<V>> asMap() {
+      return (mapView == null) ? (mapView = new AsMapAsyncView<>(this)) : mapView;
     }
 
     @Override
@@ -3478,6 +3485,7 @@ abstract class BoundedLocalCache<K, V> extends BLCHeader.DrainStatusRef<K, V>
     final BoundedLocalCache<K, CompletableFuture<V>> cache;
     final boolean isWeighted;
 
+    @Nullable ConcurrentMap<K, CompletableFuture<V>> mapView;
     @Nullable Policy<K, V> policy;
 
     @SuppressWarnings("unchecked")
@@ -3491,6 +3499,11 @@ abstract class BoundedLocalCache<K, V> extends BLCHeader.DrainStatusRef<K, V>
     @Override
     public BoundedLocalCache<K, CompletableFuture<V>> cache() {
       return cache;
+    }
+
+    @Override
+    public ConcurrentMap<K, CompletableFuture<V>> asMap() {
+      return (mapView == null) ? (mapView = new AsMapAsyncView<>(this)) : mapView;
     }
 
     @Override
